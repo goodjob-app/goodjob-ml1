@@ -3,6 +3,12 @@ import numpy as np
 import pandas as pd
 import operator
 import re
+import sys
+
+import nltk
+nltk.download('stopwords')
+nltk.download('punkt')
+
 from nltk.tokenize import word_tokenize
 from nltk.corpus import stopwords
 from sklearn.base import BaseEstimator, TransformerMixin
@@ -80,7 +86,7 @@ class JobRecommender:
 
 
 # Load data
-data = pd.read_csv('jobs.csv')
+data = pd.read_csv('models/jobs.csv')
 data = data.drop(columns=['status','city','organization_id','description'])
 data = data.dropna()
 
@@ -89,15 +95,15 @@ recommender = JobRecommender()
 recommender.fit(data)
 
 # Save the model
-joblib.dump(recommender, 'job_recommender_model.pkl')
+joblib.dump(recommender, 'models/job_recommender_model.pkl')
 
 
 # Load the model
-recommender = joblib.load('job_recommender_model.pkl')
+recommender = joblib.load('models/job_recommender_model.pkl')
 
 # Function to get user input and recommend jobs
 def get_recommendations():
-    skills_input = input("Please enter your skills: ")
+    skills_input = sys.argv[1]
     recommendations = recommender.recommend(skills_input)
     for job, score in recommendations.items():
         print(f"Job Title: {job}, Similarity Score: {score}")
